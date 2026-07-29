@@ -1,0 +1,19 @@
+version: 1
+
+authorities:
+
+- Domain Model
+- Aggregates
+- Engines
+- BRD
+- HAOM
+
+policies:
+
+- ownership
+- terminology
+
+retrieval:
+
+- domain
+- engines
