@@ -1,6 +1,7 @@
 import { KnowledgeResolver } from "./pipeline/knowledge/KnowledgeResolver.js";
 import { Indexer } from "./pipeline/knowledge/Indexer.js";
 import { AskService } from "./services/AskService.js";
+import { GenerationService } from "./services/GenerationService.js";
 
 const [, , command, target] = process.argv;
 
@@ -112,6 +113,51 @@ switch (command) {
 
     }
 
+    case "generate": {
+
+        const question =
+            process.argv.slice(3).join(" ");
+
+        const service =
+            new GenerationService();
+
+        const response =
+            await service.generate(
+
+                question,
+
+                {
+
+                    goal:
+                        question,
+
+                    output:
+                        "TypeScript",
+
+                    constraints: [
+
+                        "Follow platform architecture",
+
+                        "Use authoritative documents",
+
+                        "Do not invent terminology"
+
+                    ]
+
+                }
+
+            );
+
+        console.log();
+
+        console.log("LLM Response");
+        console.log("============");
+
+        console.log(response.response);
+
+        break;
+
+    }
     default:
 
         console.log(
