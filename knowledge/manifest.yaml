@@ -1,0 +1,11 @@
+version: "1.0"
+
+authorities:
+  - authority.yaml
+
+terminology:
+  - terminology.yaml
+
+policies:
+  - ../policies/ownership.yaml
+  - ../policies/terminology.yaml
