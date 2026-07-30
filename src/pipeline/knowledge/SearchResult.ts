@@ -1,15 +1,9 @@
+import type { IndexedChunk } from "./EmbeddingIndex.js";
+
 export interface SearchResult {
 
     score: number;
 
-    chunkId: string;
-
-    documentId: string;
-
-    title: string;
-
-    headings: string[];
-
-    content: string;
+    chunk: IndexedChunk;
 
 }

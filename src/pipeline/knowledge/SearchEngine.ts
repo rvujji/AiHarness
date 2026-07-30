@@ -34,15 +34,7 @@ export class SearchEngine {
 
                     ),
 
-                chunkId: chunk.id,
-
-                documentId: chunk.documentId,
-
-                title: chunk.headings.at(0) ?? "",
-
-                headings: chunk.headings,
-
-                content: chunk.content
+                chunk
 
             });
 

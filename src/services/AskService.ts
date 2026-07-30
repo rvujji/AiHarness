@@ -1,11 +1,10 @@
-import { OllamaEmbeddingProvider }
-    from "../providers/embeddings/OllamaEmbeddingProvider.js";
+import { OllamaEmbeddingProvider } from "../providers/embeddings/OllamaEmbeddingProvider.js";
 
-import { EmbeddingIndex }
-    from "../pipeline/knowledge/EmbeddingIndex.js";
-
-import { SearchEngine }
-    from "../pipeline/knowledge/SearchEngine.js";
+import { EmbeddingIndex } from "../pipeline/knowledge/EmbeddingIndex.js";
+import { SearchEngine } from "../pipeline/knowledge/SearchEngine.js";
+import { KnowledgeBundleBuilder } from "../pipeline/knowledge/KnowledgeBundleBuilder.js";
+import { KnowledgeResolver } from "../pipeline/knowledge/KnowledgeResolver.js";
+import { KnowledgeOptimizer } from "../pipeline/knowledge/KnowledgeOptimizer.js";
 
 export class AskService {
 
@@ -19,12 +18,9 @@ export class AskService {
             )
         );
 
-    async ask(
-        question: string
-    ) {
+    async ask(question: string) {
 
         console.log();
-
         console.log("Embedding Question...");
 
         const embedding =
@@ -35,16 +31,38 @@ export class AskService {
         );
 
         console.log();
-
         console.log("Searching...");
 
-        const results =
+        const resolver =
+            new KnowledgeResolver();
+
+        const knowledge =
+            resolver.resolve(
+                "./feature-specs/example.yaml"
+            );
+
+        const matches =
             this.search.search(
                 embedding,
                 10
             );
 
-        return results;
+        const builder =
+            new KnowledgeBundleBuilder();
+
+        const bundle =
+            builder.build(
+                question,
+                knowledge.manifest,
+                knowledge.terminology,
+                knowledge.documents,
+                matches
+            );
+
+        const optimizer =
+            new KnowledgeOptimizer();
+
+        return optimizer.optimize(bundle);
 
     }
 

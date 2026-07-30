@@ -17,7 +17,7 @@ switch (command) {
         console.log("\nKnowledge Bundle");
         console.log("================");
 
-        console.log(`Feature     : ${bundle.feature.title}`);
+        // console.log(`Feature     : ${bundle.feature.title}`);
         console.log(`Documents   : ${bundle.documents.length}`);
 
         console.log("\nAuthority Order");
@@ -56,43 +56,54 @@ switch (command) {
 
     case "ask": {
 
-    const question =
-        process.argv
-            .slice(3)
-            .join(" ");
+        const question = process.argv.slice(3).join(" ");
+        const service = new AskService();
 
-    const service =
-        new AskService();
+        const bundle = await service.ask(question);
+        console.log();
 
-        const results =
-            await service.ask(question);
+        console.log("Optimized Knowledge Bundle");
+        console.log("==========================");
+
+        console.log(`Query      : ${bundle.query}`);
+        console.log(`Documents  : ${bundle.statistics.documents}`);
+        console.log(`Contexts   : ${bundle.statistics.chunks}`);
+        console.log(`Tokens     : ${bundle.statistics.tokenCount}`);
 
         console.log();
 
-        console.log(
-            "Top Matches"
-        );
-
-        console.log(
-            "==========="
-        );
-
-        for (const result of results) {
-
-            console.log();
+        for (const document of bundle.documents) {
 
             console.log(
-                `[${result.score.toFixed(4)}]`
+                `[Priority ${document.priority}] [Relevance ${document.relevance.toFixed(4)}]`
             );
 
+            console.log(document.title);
+
             console.log(
-                result.headings.join(" > ")
+                `Matched Sections: ${document.matchedSections}`
             );
 
             console.log();
 
+            for (const context of document.contexts) {
+
+                console.log(
+                    context.headings.join(" > ")
+                );
+
+                console.log();
+
+                console.log(
+                    context.content.substring(0, 300)
+                );
+
+                console.log();
+
+            }
+
             console.log(
-                result.content.substring(0,300)
+                "------------------------------------------------------------\n"
             );
 
         }
