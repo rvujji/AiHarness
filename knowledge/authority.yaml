@@ -1,0 +1,30 @@
+documents:
+  - id: platform-architecture
+    title: Platform Architecture
+    path: docs/architecture/PlatformArchitecture.md
+    priority: 100
+
+  - id: domain-model
+    title: Domain Model
+    path: docs/architecture/DomainModel.md
+    priority: 95
+
+  - id: engines
+    title: Engines
+    path: docs/architecture/Engines.md
+    priority: 90
+
+  - id: aggregates
+    title: Aggregates
+    path: docs/architecture/Aggregates.md
+    priority: 90
+
+  - id: brd
+    title: BRD
+    path: docs/product/BRD.md
+    priority: 80
+
+  - id: haom
+    title: Human Adherence Operating Model
+    path: docs/psychology/HAOM.md
+    priority: 85

@@ -1,0 +1,6 @@
+terms:
+  - name: Goal
+    description: A desired behavioral outcome.
+
+  - name: Plan
+    description: A structured approach to achieving a Goal.
