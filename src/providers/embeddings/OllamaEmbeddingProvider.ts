@@ -5,25 +5,26 @@ export class OllamaEmbeddingProvider
 
     async embed(text: string): Promise<number[]> {
 
-        const response = await fetch(
-            "http://localhost:11434/api/embeddings",
-            {
-                method: "POST",
+        const response =
+            await fetch(
+                "http://localhost:11434/api/embeddings",
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-                body: JSON.stringify({
+                    body: JSON.stringify({
 
-                    model: "nomic-embed-text",
+                        model: "nomic-embed-text",
 
-                    prompt: text
+                        prompt: text
 
-                })
+                    })
 
-            }
-        );
+                }
+            );
 
         if (!response.ok) {
 
@@ -33,7 +34,8 @@ export class OllamaEmbeddingProvider
 
         }
 
-        const json = await response.json();
+        const json =
+            await response.json();
 
         return json.embedding;
 

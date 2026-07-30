@@ -1,5 +1,6 @@
 import { KnowledgeResolver } from "./pipeline/knowledge/KnowledgeResolver.js";
 import { Indexer } from "./pipeline/knowledge/Indexer.js";
+import { AskService } from "./services/AskService.js";
 
 const [, , command, target] = process.argv;
 
@@ -48,6 +49,53 @@ switch (command) {
         await indexer.index(
             bundle.documents
         );
+
+        break;
+
+    }
+
+    case "ask": {
+
+    const question =
+        process.argv
+            .slice(3)
+            .join(" ");
+
+    const service =
+        new AskService();
+
+        const results =
+            await service.ask(question);
+
+        console.log();
+
+        console.log(
+            "Top Matches"
+        );
+
+        console.log(
+            "==========="
+        );
+
+        for (const result of results) {
+
+            console.log();
+
+            console.log(
+                `[${result.score.toFixed(4)}]`
+            );
+
+            console.log(
+                result.headings.join(" > ")
+            );
+
+            console.log();
+
+            console.log(
+                result.content.substring(0,300)
+            );
+
+        }
 
         break;
 
