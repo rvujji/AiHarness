@@ -13,8 +13,11 @@ import { PromptBuilder }
 import { InferenceService }
     from "./InferenceService.js";
 
-export class GenerationService {
+import { PromptVerificationService} from "../pipeline/promptverification/PromptVerificationService.js";
+import { GenerationResult } from "../contracts/GenerationResult.js";
 
+export class GenerationService {
+    
     private readonly askService =
         new AskService();
 
@@ -24,6 +27,11 @@ export class GenerationService {
     private readonly inferenceService =
         new InferenceService();
 
+    private readonly promptVerificationService =
+        new PromptVerificationService();
+
+    
+
     async generate(
 
         question: string,
@@ -32,7 +40,7 @@ export class GenerationService {
 
         model = "qwen3:8b"
 
-    ): Promise<InferenceResponse> {
+    ): Promise<GenerationResult> {
 
         //
         // 1. Retrieve knowledge
@@ -57,14 +65,24 @@ export class GenerationService {
         //
         // 3. Execute inference
         //
-
-        return this.inferenceService.infer(
+        const inference = await this.inferenceService.infer(
 
             prompt,
 
             model
 
         );
+
+        const verification =
+            this.promptVerificationService.verify(
+                inference.response,
+                knowledge
+            );
+
+        return {
+            inference,
+            verification
+        };
 
     }
 

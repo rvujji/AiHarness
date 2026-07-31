@@ -2,6 +2,7 @@ import { KnowledgeResolver } from "./pipeline/knowledge/KnowledgeResolver.js";
 import { Indexer } from "./pipeline/knowledge/Indexer.js";
 import { AskService } from "./services/AskService.js";
 import { GenerationService } from "./services/GenerationService.js";
+import { ConsolePrinter } from "./presentation/ConsolePrinter.js";
 
 const [, , command, target] = process.argv;
 
@@ -15,21 +16,7 @@ switch (command) {
                 target ?? "./feature-specs/example.yaml"
             );
 
-        console.log("\nKnowledge Bundle");
-        console.log("================");
-
-        // console.log(`Feature     : ${bundle.feature.title}`);
-        console.log(`Documents   : ${bundle.documents.length}`);
-
-        console.log("\nAuthority Order");
-
-        for (const document of bundle.documents) {
-
-            console.log(
-                `${document.priority} - ${document.title}`
-            );
-
-        }
+        ConsolePrinter.printKnowledgeBundle(bundle);
 
         break;
     }
@@ -47,9 +34,11 @@ switch (command) {
         const indexer =
             new Indexer();
 
-        await indexer.index(
+        const index = await indexer.index(
             bundle.documents
         );
+
+        ConsolePrinter.printEmbeddingIndex(index);
 
         break;
 
@@ -61,53 +50,7 @@ switch (command) {
         const service = new AskService();
 
         const bundle = await service.ask(question);
-        console.log();
-
-        console.log("Optimized Knowledge Bundle");
-        console.log("==========================");
-
-        console.log(`Query      : ${bundle.query}`);
-        console.log(`Documents  : ${bundle.statistics.documents}`);
-        console.log(`Contexts   : ${bundle.statistics.chunks}`);
-        console.log(`Tokens     : ${bundle.statistics.tokenCount}`);
-
-        console.log();
-
-        for (const document of bundle.documents) {
-
-            console.log(
-                `[Priority ${document.priority}] [Relevance ${document.relevance.toFixed(4)}]`
-            );
-
-            console.log(document.title);
-
-            console.log(
-                `Matched Sections: ${document.matchedSections}`
-            );
-
-            console.log();
-
-            for (const context of document.contexts) {
-
-                console.log(
-                    context.headings.join(" > ")
-                );
-
-                console.log();
-
-                console.log(
-                    context.content.substring(0, 300)
-                );
-
-                console.log();
-
-            }
-
-            console.log(
-                "------------------------------------------------------------\n"
-            );
-
-        }
+        ConsolePrinter.printOptimizedKnowledge(bundle);
 
         break;
 
@@ -121,7 +64,7 @@ switch (command) {
         const service =
             new GenerationService();
 
-        const response =
+        const result =
             await service.generate(
 
                 question,
@@ -148,12 +91,7 @@ switch (command) {
 
             );
 
-        console.log();
-
-        console.log("LLM Response");
-        console.log("============");
-
-        console.log(response.response);
+        ConsolePrinter.printGenerationResult(result);
 
         break;
 
