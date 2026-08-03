@@ -18,6 +18,9 @@ import { GenerationResult } from "../contracts/GenerationResult.js";
 
 import { KnowledgeGapAnalyzer }
     from "../pipeline/analysis/KnowledgeGapAnalyzer.js";
+import { TerminologyValidator } from "../pipeline/analysis/TerminologyValidator.js";
+import { AuthorityValidator } from "../pipeline/analysis/AuthorityValidator.js";
+import { ArchitectureValidator } from "../pipeline/analysis/ArchitectureValidator.js";
 
 export class GenerationService {
     
@@ -35,6 +38,15 @@ export class GenerationService {
 
     private readonly knowledgeGapAnalyzer =
         new KnowledgeGapAnalyzer();
+
+    private readonly terminologyValidator =
+        new TerminologyValidator();
+
+    private readonly authorityValidator =
+        new AuthorityValidator();
+
+    private readonly architectureValidator =
+        new ArchitectureValidator();
 
     async generate(
 
@@ -87,10 +99,38 @@ export class GenerationService {
             this.knowledgeGapAnalyzer.analyze(
                 verification
             );
+
+        const terminology =
+            this.terminologyValidator.validate(
+
+                inference.response,
+
+                knowledge.terminology
+
+            );
+
+        const authority =
+            this.authorityValidator.validate(
+                verification
+            );
+
+        const architecture =
+            this.architectureValidator.validate(
+
+                authority,
+
+                terminology,
+
+                knowledgeGaps
+
+            );
         return {
             inference,
             verification,
-            knowledgeGaps
+            knowledgeGaps,
+            terminology,
+            authority,
+            architecture
         };
 
     }

@@ -144,6 +144,75 @@ export class ConsolePrinter {
 
         console.log();
 
+        console.log("==========================================================");
+        console.log("                 AIHARNESS QUALITY REPORT");
+        console.log("==========================================================");
+        console.log();
+
+        console.log(
+            `Overall Confidence : ${(result.verification.confidence.overall * 100).toFixed(1)}%`
+        );
+
+        console.log(
+            `Evidence Quality   : ${(result.verification.confidence.evidence * 100).toFixed(1)}%`
+        );
+
+        console.log(
+            `Knowledge Coverage : ${(result.verification.confidence.coverage * 100).toFixed(1)}%`
+        );
+
+        console.log(
+            `Hallucination Risk : ${(result.verification.confidence.hallucinationRisk * 100).toFixed(1)}%`
+        );
+
+        console.log();
+
+        console.log(
+            `Architecture       : ${result.architecture.overall.toUpperCase()}`
+        );
+
+        console.log(
+            `Knowledge Gaps     : ${result.knowledgeGaps.total}`
+        );
+
+        console.log(
+            `Terminology Issues : ${result.terminology.total}`
+        );
+
+        console.log(
+            `Authority Issues   : ${result.authority.weakAuthority}`
+        );
+
+        console.log();
+
+        console.log(
+            `Claims             : ${result.verification.totalClaims}`
+        );
+
+        console.log(
+            `Supported          : ${result.verification.supportedClaims}`
+        );
+
+        console.log(
+            `Partial            : ${result.verification.partialClaims}`
+        );
+
+        console.log(
+            `Missing            : ${result.verification.missingClaims}`
+        );
+
+        console.log(
+            `Contradicted       : ${result.verification.contradictedClaims}`
+        );
+
+        console.log();
+
+        console.log("==========================================================");
+
+        console.log();
+
+        console.log();
+
         console.log("Verification");
         console.log("============");
         console.log(`Overall Confidence : ${(result.verification.confidence.overall * 100).toFixed(1)}%`);
@@ -282,6 +351,145 @@ export class ConsolePrinter {
 
                 console.log(
                     `Recommendation : ${gap.recommendation}`
+                );
+
+                console.log();
+
+            }
+
+            console.log();
+
+            console.log("Terminology");
+            console.log("===========");
+
+            console.log(
+                `Violations : ${result.terminology.total}`
+            );
+
+            console.log();
+
+            for (
+
+                const violation of
+
+                result.terminology.violations
+
+            ) {
+
+                const icon =
+
+                    violation.severity === "error"
+
+                        ? "✗"
+
+                        : "⚠";
+
+                console.log(
+
+                    `${icon} ${violation.text}`
+
+                );
+
+                console.log(
+
+                    `    ${violation.reason}`
+
+                );
+
+                if (violation.suggestion) {
+
+                    console.log(
+
+                        `    Suggestion: ${violation.suggestion}`
+
+                    );
+
+                }
+
+                console.log();
+
+            }
+
+            console.log();
+
+            console.log("Authority");
+            console.log("=========");
+
+            console.log(
+                `Authoritative : ${result.authority.authoritative}`
+            );
+
+            console.log(
+                `Weak Authority: ${result.authority.weakAuthority}`
+            );
+
+            console.log();
+
+            for (
+
+                const finding of
+
+                result.authority.findings
+
+            ) {
+
+                console.log(
+
+                    `[${finding.severity.toUpperCase()}] ${finding.claim}`
+
+                );
+
+                console.log(
+
+                    `Highest Priority : ${finding.highestPriority}`
+
+                );
+
+                console.log(
+
+                    `Used Priority    : ${finding.usedPriority}`
+
+                );
+
+                console.log(
+
+                    `Reason           : ${finding.reason}`
+
+                );
+
+                console.log();
+
+            }
+
+            console.log();
+
+            console.log("Architecture");
+            console.log("============");
+
+            console.log(
+                `Overall : ${result.architecture.overall.toUpperCase()}`
+            );
+
+            console.log();
+
+            for (
+
+                const violation of
+
+                result.architecture.violations
+
+            ) {
+
+                console.log(
+
+                    `[${violation.severity.toUpperCase()}] ${violation.category}`
+
+                );
+
+                console.log(
+
+                    `    ${violation.message}`
+
                 );
 
                 console.log();

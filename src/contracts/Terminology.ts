@@ -11,3 +11,25 @@ export interface CanonicalTerm {
     description: string;
 
 }
+
+export interface TerminologyViolation {
+
+    text: string;
+
+    severity:
+        | "warning"
+        | "error";
+
+    reason: string;
+
+    suggestion?: string;
+
+}
+
+export interface TerminologyValidationReport {
+
+    total: number;
+
+    violations: TerminologyViolation[];
+
+}

@@ -4,6 +4,8 @@ export interface Evidence {
 
     title: string;
 
+    priority: number;
+
     headings: string[];
 
     content: string;

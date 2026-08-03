@@ -104,6 +104,9 @@ export class EvidenceExtractor {
                     title:
                         document.title,
 
+                    priority:
+                        document.priority,
+
                     headings:
                         context.headings,
 
