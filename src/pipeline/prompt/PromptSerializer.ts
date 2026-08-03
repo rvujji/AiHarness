@@ -1,4 +1,5 @@
-import type { Prompt } from "../../contracts/Prompt.js";
+import type { Prompt }
+    from "../../contracts/Prompt.js";
 
 export class PromptSerializer {
 
@@ -8,21 +9,51 @@ export class PromptSerializer {
 
         return [
 
-            "# SYSTEM",
+            this.section(
+                "SYSTEM",
+                prompt.system
+            ),
 
-            prompt.system,
+            this.section(
+                "KNOWLEDGE",
+                prompt.context
+            ),
+
+            this.section(
+                "TASK",
+                prompt.task
+            ),
+
+            this.section(
+                "CONSTRAINTS",
+                prompt.constraints
+            ),
+
+            this.section(
+                "VERIFICATION",
+                prompt.verification
+            )
+
+        ].join("\n\n");
+
+    }
+
+    private section(
+        title: string,
+        body: string
+    ): string {
+
+        return [
+
+            "=".repeat(80),
+
+            title,
+
+            "=".repeat(80),
 
             "",
 
-            "# CONTEXT",
-
-            prompt.context,
-
-            "",
-
-            "# TASK",
-
-            prompt.task
+            body.trim()
 
         ].join("\n");
 

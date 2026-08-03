@@ -13,6 +13,9 @@ import { EvidenceExtractor }
 import { EvidenceVerifier }
     from "./EvidenceVerifier.js";
 
+import { ConfidenceCalculator }
+    from "./ConfidenceCalculator.js";
+
 export class PromptVerificationService {
 
     private readonly claimExtractor =
@@ -23,6 +26,9 @@ export class PromptVerificationService {
 
     private readonly verifier =
         new EvidenceVerifier();
+
+    private readonly confidenceCalculator =
+        new ConfidenceCalculator();
 
     verify(
 
@@ -60,6 +66,11 @@ export class PromptVerificationService {
                 claimEvidence
             );
 
+        const confidence =
+            this.confidenceCalculator.calculate(
+                results
+            );
+
         return {
 
             totalClaims:
@@ -88,6 +99,8 @@ export class PromptVerificationService {
                     result =>
                         result.status === "contradicted"
                 ).length,
+
+            confidence: confidence,
 
             results
 

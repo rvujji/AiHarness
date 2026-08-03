@@ -14,39 +14,24 @@ export class EvidenceVerifier {
 
         for (const claim of claims) {
 
-            let status:
-                VerificationResult["status"];
+            //
+            // Consider only the strongest evidence.
+            //
 
-            if (claim.evidence.length === 0) {
+            const evidence =
+                claim.evidence
+                    .slice(0, 3);
 
-                status = "missing";
+            const confidence =
+                this.calculateConfidence(
+                    evidence
+                );
 
-            }
-
-            else {
-
-                const bestScore =
-                    claim.evidence[0].score;
-
-                if (bestScore >= 0.75) {
-
-                    status = "supported";
-
-                }
-
-                else if (bestScore >= 0.40) {
-
-                    status = "partial";
-
-                }
-
-                else {
-
-                    status = "missing";
-
-                }
-
-            }
+            const status =
+                this.determineStatus(
+                    evidence,
+                    confidence
+                );
 
             results.push({
 
@@ -54,13 +39,121 @@ export class EvidenceVerifier {
 
                 status,
 
-                evidence: claim.evidence
+                confidence,
+
+                evidence
 
             });
 
         }
 
         return results;
+
+    }
+
+    //--------------------------------------------------
+    // Confidence
+    //--------------------------------------------------
+
+    private calculateConfidence(
+        evidence: ClaimEvidence["evidence"]
+    ): number {
+
+        if (evidence.length === 0) {
+
+            return 0;
+
+        }
+
+        const best =
+            evidence[0].score;
+
+        const average =
+
+            evidence.reduce(
+
+                (sum, item) =>
+
+                    sum + item.score,
+
+                0
+
+            ) / evidence.length;
+
+        //
+        // Bias slightly toward the strongest match.
+        //
+
+        return (
+
+            best * 0.70 +
+
+            average * 0.30
+
+        );
+
+    }
+
+    //--------------------------------------------------
+    // Classification
+    //--------------------------------------------------
+
+    private determineStatus(
+
+        evidence: ClaimEvidence["evidence"],
+
+        confidence: number
+
+    ): VerificationResult["status"] {
+
+        if (
+
+            evidence.length === 0
+
+        ) {
+
+            return "missing";
+
+        }
+
+        const best =
+            evidence[0].score;
+
+        const average =
+
+            evidence.reduce(
+
+                (sum, item) =>
+
+                    sum + item.score,
+
+                0
+
+            ) / evidence.length;
+
+        if (
+
+            best >= 0.80 &&
+
+            average >= 0.70
+
+        ) {
+
+            return "supported";
+
+        }
+
+        if (
+
+            best >= 0.60
+
+        ) {
+
+            return "partial";
+
+        }
+
+        return "missing";
 
     }
 

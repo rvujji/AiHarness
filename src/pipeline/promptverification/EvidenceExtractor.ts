@@ -5,6 +5,16 @@ import type { OptimizedKnowledgeBundle } from "../../contracts/OptimizedKnowledg
 
 export class EvidenceExtractor {
 
+    private static readonly STOP_WORDS = new Set([
+
+        "the","a","an","and","or","for","with","from","into",
+        "that","this","these","those","their","there","which",
+        "will","would","should","could","must","have","has",
+        "had","been","being","were","was","are","is","of","to",
+        "on","in","by","at","as","it","its","than"
+
+    ]);
+
     extract(
 
         claims: Claim[],
@@ -13,29 +23,29 @@ export class EvidenceExtractor {
 
     ): ClaimEvidence[] {
 
-        const results: ClaimEvidence[] = [];
+        return claims.map(
 
-        for (const claim of claims) {
-
-            const evidence =
-                this.findEvidence(
-                    claim,
-                    bundle
-                );
-
-            results.push({
+            claim => ({
 
                 claim,
 
-                evidence
+                evidence:
 
-            });
+                    this.findEvidence(
 
-        }
+                        claim,
 
-        return results;
+                        bundle
+
+                    )
+
+            })
+
+        );
 
     }
+
+    //--------------------------------------------------
 
     private findEvidence(
 
@@ -52,41 +62,39 @@ export class EvidenceExtractor {
 
         const evidence: Evidence[] = [];
 
+        const seen = new Set<string>();
+
         for (const document of bundle.documents) {
 
             for (const context of document.contexts) {
 
-                const searchable = (
+                const key =
+                    document.documentId +
+                    ":" +
+                    context.chunkIndex;
 
-                    context.headings.join(" ")
+                if (seen.has(key)) {
+                    continue;
+                }
 
-                    + " "
+                const score =
+                    this.scoreContext(
 
-                    + context.content
+                        keywords,
 
-                ).toLowerCase();
+                        context.headings,
 
-                const matchedKeywords =
+                        context.content,
 
-                    keywords.filter(
-
-                        keyword =>
-
-                            searchable.includes(
-                                keyword
-                            )
+                        document.priority
 
                     );
 
-                if (
-
-                    matchedKeywords.length === 0
-
-                ) {
-
+                if (score <= 0) {
                     continue;
-
                 }
+
+                seen.add(key);
 
                 evidence.push({
 
@@ -102,11 +110,7 @@ export class EvidenceExtractor {
                     content:
                         context.content,
 
-                    score:
-
-                        matchedKeywords.length /
-
-                        keywords.length
+                    score
 
                 });
 
@@ -114,37 +118,142 @@ export class EvidenceExtractor {
 
         }
 
-        evidence.sort(
+        return evidence
 
-            (left, right) =>
+            .sort(
 
-                right.score - left.score
+                (a,b)=>
+
+                    b.score-a.score
+
+            )
+
+            .slice(0,3);
+
+    }
+
+    private scoreContext(
+
+        keywords: string[],
+
+        headings: string[],
+
+        content: string,
+
+        priority: number
+
+    ): number {
+
+        const headingText =
+
+            headings
+                .join(" ")
+                .toLowerCase();
+
+        const body =
+            content.toLowerCase();
+
+        let matched = 0;
+
+        let headingMatches = 0;
+
+        for (const keyword of keywords) {
+
+            if (
+
+                headingText.includes(keyword)
+
+            ) {
+
+                matched++;
+
+                headingMatches++;
+
+            }
+
+            else if (
+
+                body.includes(keyword)
+
+            ) {
+
+                matched++;
+
+            }
+
+        }
+
+        if (matched === 0) {
+
+            return 0;
+
+        }
+
+        const coverage =
+
+            matched /
+
+            keywords.length;
+
+        const headingBonus =
+
+            headingMatches * 0.05;
+
+        const authorityBonus =
+
+            (priority - 80) / 100;
+
+        return Math.min(
+
+            1,
+
+            coverage +
+
+            headingBonus +
+
+            authorityBonus
 
         );
 
-        return evidence.slice(0, 5);
-
     }
+
+    //--------------------------------------------------
 
     private extractKeywords(
         text: string
     ): string[] {
 
-        return text
+        return [
 
-            .toLowerCase()
+            ...new Set(
 
-            .replace(/[^a-z0-9 ]/g, " ")
+                text
 
-            .split(/\s+/)
+                    .toLowerCase()
 
-            .filter(
+                    .replace(
 
-                word =>
+                        /[^a-z0-9 ]/g,
 
-                    word.length > 3
+                        " "
 
-            );
+                    )
+
+                    .split(/\s+/)
+
+                    .filter(
+
+                        word =>
+
+                            word.length > 2 &&
+
+                            !EvidenceExtractor.STOP_WORDS.has(word)
+
+                    )
+
+            )
+
+        ];
 
     }
 

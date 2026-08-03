@@ -146,13 +146,11 @@ export class ConsolePrinter {
 
         console.log("Verification");
         console.log("============");
-
-        console.log(
-
-            `Claims        : ${result.verification.totalClaims}`
-
-        );
-
+        console.log(`Overall Confidence : ${(result.verification.confidence.overall * 100).toFixed(1)}%`);
+        console.log(`Evidence Quality   : ${(result.verification.confidence.evidence * 100).toFixed(1)}%`);
+        console.log(`Knowledge Coverage : ${(result.verification.confidence.coverage * 100).toFixed(1)}%`);
+        console.log(`Hallucination Risk : ${(result.verification.confidence.hallucinationRisk * 100).toFixed(1)}%`);
+        console.log(`Claims        : ${result.verification.totalClaims}`);
         console.log(
 
             `Supported     : ${result.verification.supportedClaims}`
@@ -246,6 +244,47 @@ export class ConsolePrinter {
                     "    No supporting evidence."
 
                 );
+
+            }
+
+            console.log();
+
+            console.log("Knowledge Gaps");
+            console.log("==============");
+
+            console.log(
+                `Total   : ${result.knowledgeGaps.total}`
+            );
+
+            console.log(
+                `High    : ${result.knowledgeGaps.high}`
+            );
+
+            console.log(
+                `Medium  : ${result.knowledgeGaps.medium}`
+            );
+
+            console.log(
+                `Low     : ${result.knowledgeGaps.low}`
+            );
+
+            console.log();
+
+            for (const gap of result.knowledgeGaps.gaps) {
+
+                console.log(
+                    `[${gap.severity.toUpperCase()}] ${gap.claim}`
+                );
+
+                console.log(
+                    `Reason         : ${gap.reason}`
+                );
+
+                console.log(
+                    `Recommendation : ${gap.recommendation}`
+                );
+
+                console.log();
 
             }
 

@@ -13,6 +13,8 @@ export interface VerificationResult {
 
     status: VerificationStatus;
 
+    confidence: number;
+
     evidence: Evidence[];
 
 }

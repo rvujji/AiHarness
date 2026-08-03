@@ -6,4 +6,8 @@ export interface Prompt {
 
     task: string;
 
+    constraints: string;
+
+    verification: string;
+
 }

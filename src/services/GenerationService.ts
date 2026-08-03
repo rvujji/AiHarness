@@ -16,6 +16,9 @@ import { InferenceService }
 import { PromptVerificationService} from "../pipeline/promptverification/PromptVerificationService.js";
 import { GenerationResult } from "../contracts/GenerationResult.js";
 
+import { KnowledgeGapAnalyzer }
+    from "../pipeline/analysis/KnowledgeGapAnalyzer.js";
+
 export class GenerationService {
     
     private readonly askService =
@@ -30,7 +33,8 @@ export class GenerationService {
     private readonly promptVerificationService =
         new PromptVerificationService();
 
-    
+    private readonly knowledgeGapAnalyzer =
+        new KnowledgeGapAnalyzer();
 
     async generate(
 
@@ -79,9 +83,14 @@ export class GenerationService {
                 knowledge
             );
 
+        const knowledgeGaps =
+            this.knowledgeGapAnalyzer.analyze(
+                verification
+            );
         return {
             inference,
-            verification
+            verification,
+            knowledgeGaps
         };
 
     }
