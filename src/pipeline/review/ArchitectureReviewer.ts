@@ -14,19 +14,52 @@ export class ArchitectureReviewer
 
         return {
 
-            goal:
-                "Review the supplied artifact for architectural correctness.",
+            query:
 
-            output:
-                "Architecture Review Report",
+                "architecture layering dependencies modules engines boundaries",
+            objective:
+
+                "Evaluate the supplied architecture for software architecture correctness.",
+
+            checklist: [
+
+                "Architectural layering",
+
+                "Dependency direction",
+
+                "Module ownership",
+
+                "Component responsibilities",
+
+                "Engine responsibilities",
+
+                "Architectural boundaries",
+
+                "Separation of concerns",
+
+                "Composition",
+
+                "Circular dependencies",
+
+                "Scalability"
+
+            ],
+
+            outputSections:
+
+                this.outputSections(),
 
             constraints: [
 
-                "Follow Platform Architecture.",
+                ...this.commonConstraints(),
 
-                "Follow Domain Model.",
+                "Do not invent architectural layers.",
 
-                "Follow Constitution."
+                "Do not invent components.",
+
+                "Do not invent dependencies.",
+
+                "Do not infer deployment architecture."
 
             ]
 

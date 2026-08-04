@@ -44,11 +44,11 @@ export class PromptBuilder {
             system:
                 this.template.system(),
 
-                context:
-                this.buildContext(reduced),
-
             task:
-                this.buildTask(task),
+                this.buildReviewInstructions(task),
+
+            context:
+                this.buildContext(reduced),
 
             constraints:
                 this.buildConstraints(task),
@@ -94,11 +94,75 @@ ${context.content}
 
     }
 
-    private buildTask(
+    private buildReviewInstructions(
         task: PromptTask
     ): string {
 
-        return task.goal.trim();
+        let text = "";
+
+        //--------------------------------------------------
+        // Objective
+        //--------------------------------------------------
+
+        text +=
+    `OBJECTIVE
+    =========
+
+    ${task.objective}
+
+    `;
+
+        //--------------------------------------------------
+        // Checklist
+        //--------------------------------------------------
+
+        text +=
+    `CHECKLIST
+    ==========
+
+    `;
+
+        for (
+
+            const item of
+
+            task.checklist
+
+        ) {
+
+            text +=
+    `- ${item}
+    `;
+
+        }
+
+        text += "\n";
+
+        //--------------------------------------------------
+        // Required Output
+        //--------------------------------------------------
+
+        text +=
+    `REQUIRED OUTPUT
+    ================
+
+    `;
+
+        for (
+
+            const section of
+
+            task.outputSections
+
+        ) {
+
+            text +=
+    `- ${section}
+    `;
+
+        }
+
+        return text.trim();
 
     }
 
@@ -106,9 +170,25 @@ ${context.content}
         task: PromptTask
     ): string {
 
-        return task.constraints
+        if (
 
-            .map(
+            task.constraints.length === 0
+
+        ) {
+
+            return "";
+
+        }
+
+        return [
+
+            "ADDITIONAL CONSTRAINTS",
+
+            "======================",
+
+            "",
+
+            ...task.constraints.map(
 
                 constraint =>
 
@@ -116,7 +196,7 @@ ${context.content}
 
             )
 
-            .join("\n");
+        ].join("\n");
 
     }
 

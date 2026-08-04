@@ -25,7 +25,7 @@ export abstract class BaseReviewer {
 
             await this.generationService.generate(
 
-                task.output,   // or another short retrieval string
+                task.query,   // or another short retrieval string
 
                 task
 
@@ -49,7 +49,7 @@ export abstract class BaseReviewer {
         request: ReviewRequest
     ): string {
 
-        return this.buildTask(request).goal;
+        return this.buildTask(request).objective;
 
     }
 
@@ -66,5 +66,45 @@ export abstract class BaseReviewer {
         findings: ReviewFinding[]
 
     ): ReviewReport;
+
+    protected outputSections(): string[] {
+
+        return [
+
+            "Summary",
+
+            "Verified Facts",
+
+            "Assumptions",
+
+            "Missing Information",
+
+            "Recommendations",
+
+            "Not Specified in the Supplied Knowledge"
+
+        ];
+
+    }
+
+    protected commonConstraints(): string[] {
+
+        return [
+
+            "Use only the supplied knowledge.",
+
+            "Do not invent entities.",
+
+            "Do not invent aggregates.",
+
+            "Do not invent APIs.",
+
+            "Do not invent implementation details.",
+
+            "Recommendations must be derived from identified gaps."
+
+        ];
+
+    }
 
 }

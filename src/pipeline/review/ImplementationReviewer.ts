@@ -23,23 +23,52 @@ export class ImplementationReviewer
 
         return {
 
-            goal:
-                "Review the supplied implementation.",
+            query:
 
-            output:
-                "Implementation Review Report",
+                "SOLID maintainability coupling cohesion implementation",
+            objective:
+
+                "Evaluate the supplied implementation for maintainability and correctness.",
+
+            checklist: [
+
+                "SOLID principles",
+
+                "Coupling",
+
+                "Cohesion",
+
+                "Readability",
+
+                "Maintainability",
+
+                "Error handling",
+
+                "Performance",
+
+                "Consistency",
+
+                "Naming",
+
+                "Testability"
+
+            ],
+
+            outputSections:
+
+                this.outputSections(),
 
             constraints: [
 
-                "Follow Platform Architecture.",
+                ...this.commonConstraints(),
 
-                "Follow Domain Model.",
+                "Do not infer implementation details.",
 
-                "Follow Coding Standards.",
+                "Do not invent algorithms.",
 
-                "Follow Constitution.",
+                "Do not invent classes.",
 
-                "Use authoritative terminology only."
+                "Do not speculate about performance."
 
             ]
 

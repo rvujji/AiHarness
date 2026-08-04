@@ -23,21 +23,52 @@ export class DatabaseReviewer
 
         return {
 
-            goal:
-                "Review the supplied database design.",
+            query:
 
-            output:
-                "Database Review Report",
+                "database persistence aggregates tables foreign keys indexes",
+            objective:
+
+                "Evaluate the supplied design for relational database correctness.",
+
+            checklist: [
+
+                "Aggregate persistence",
+
+                "Entity ownership",
+
+                "Primary keys",
+
+                "Foreign keys",
+
+                "Referential integrity",
+
+                "Cardinality",
+
+                "Constraints",
+
+                "Indexes",
+
+                "Normalization",
+
+                "Persistence boundaries"
+
+            ],
+
+            outputSections:
+
+                this.outputSections(),
 
             constraints: [
 
-                "Follow Platform Architecture.",
+                ...this.commonConstraints(),
 
-                "Follow Domain Model.",
+                "Do not invent tables.",
 
-                "Follow Database Model.",
+                "Do not invent columns.",
 
-                "Respect aggregate persistence boundaries."
+                "Do not infer foreign keys.",
+
+                "Do not infer indexes."
 
             ]
 

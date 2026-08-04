@@ -23,21 +23,52 @@ export class ApiReviewer
 
         return {
 
-            goal:
-                "Review the supplied API.",
+            query:
 
-            output:
-                "API Review Report",
+                "REST API endpoints request response status codes validation",
+            objective:
+
+                "Evaluate the supplied API design for correctness and consistency.",
+
+            checklist: [
+
+                "REST semantics",
+
+                "Request models",
+
+                "Response models",
+
+                "Validation",
+
+                "HTTP status codes",
+
+                "Versioning",
+
+                "Pagination",
+
+                "Filtering",
+
+                "Idempotency",
+
+                "Error handling"
+
+            ],
+
+            outputSections:
+
+                this.outputSections(),
 
             constraints: [
 
-                "Follow command catalog.",
+                ...this.commonConstraints(),
 
-                "Follow event catalog.",
+                "Do not invent endpoints.",
 
-                "Respect engine ownership.",
+                "Do not invent payloads.",
 
-                "Respect aggregate boundaries."
+                "Do not invent response models.",
+
+                "Do not infer API contracts."
 
             ]
 

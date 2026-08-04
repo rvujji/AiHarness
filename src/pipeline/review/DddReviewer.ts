@@ -23,21 +23,54 @@ export class DddReviewer
 
         return {
 
-            goal:
-                "Review the supplied artifact for Domain-Driven Design correctness.",
+            query:
+                "DDD aggregates bounded contexts domain events repositories invariants",
+            objective:
 
-            output:
-                "DDD Review Report",
+                "Evaluate the supplied architecture for Domain-Driven Design correctness.",
+            checklist: [
+
+                "Aggregate boundaries",
+
+                "Aggregate ownership",
+
+                "Aggregate lifecycle",
+
+                "Aggregate invariants",
+
+                "Aggregate consistency",
+
+                "Bounded contexts",
+
+                "Domain services",
+
+                "Domain events",
+
+                "Repositories",
+
+                "Transaction boundaries",
+
+                "Ubiquitous language"
+
+            ],
+
+            outputSections:
+
+                this.outputSections(),
 
             constraints: [
 
-                "Follow Domain Model.",
+                ...this.commonConstraints(),
 
-                "Respect Aggregate boundaries.",
+                "Do not invent aggregates.",
 
-                "Respect ownership direction.",
+                "Do not invent bounded contexts.",
 
-                "Respect domain invariants."
+                "Do not invent domain events.",
+
+                "Do not infer repositories.",
+
+                "Do not infer transaction boundaries."
 
             ]
 
