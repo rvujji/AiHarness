@@ -1,37 +1,79 @@
-import type { KnowledgeGap } from "../../contracts/KnowledgeGap.js";
-import type { KnowledgeGapReport } from "../../contracts/KnowledgeGapReport.js";
-import type { PromptVerificationReport } from "../../contracts/PromptVerificationReport.js";
+import type { KnowledgeGap }
+    from "../../contracts/KnowledgeGap.js";
+
+import type { KnowledgeGapReport }
+    from "../../contracts/KnowledgeGapReport.js";
+
+import type { ReviewDocument }
+    from "../../contracts/ReviewDocument.js";
 
 export class KnowledgeGapAnalyzer {
 
+    private static readonly SECTION =
+        "missing information";
+
     analyze(
-        verification: PromptVerificationReport
+        review: ReviewDocument
     ): KnowledgeGapReport {
 
         const gaps: KnowledgeGap[] = [];
 
-        for (const result of verification.results) {
+        const section =
 
-            if (result.status !== "missing") {
-                continue;
-            }
+            review.sections.find(
+
+                section =>
+
+                    section.title.toLowerCase() ===
+
+                    KnowledgeGapAnalyzer.SECTION
+
+            );
+
+        if (!section) {
+
+            return {
+
+                total: 0,
+
+                high: 0,
+
+                medium: 0,
+
+                low: 0,
+
+                gaps: []
+
+            };
+
+        }
+
+        let id = 1;
+
+        for (
+
+            const item of
+
+            section.items
+
+        ) {
 
             gaps.push({
 
                 claimId:
-                    result.claim.id,
+                    id++,
 
                 claim:
-                    result.claim.text,
+                    item.text,
 
                 severity:
-                    this.determineSeverity(result.confidence),
+                    "medium",
 
                 reason:
-                    this.determineReason(result),
+                    "The review identified this information as missing from the supplied knowledge.",
 
                 recommendation:
-                    this.determineRecommendation(result)
+                    "Add authoritative documentation covering this topic."
 
             });
 
@@ -44,76 +86,34 @@ export class KnowledgeGapAnalyzer {
 
             high:
                 gaps.filter(
-                    gap => gap.severity === "high"
+
+                    gap =>
+
+                        gap.severity === "high"
+
                 ).length,
 
             medium:
                 gaps.filter(
-                    gap => gap.severity === "medium"
+
+                    gap =>
+
+                        gap.severity === "medium"
+
                 ).length,
 
             low:
                 gaps.filter(
-                    gap => gap.severity === "low"
+
+                    gap =>
+
+                        gap.severity === "low"
+
                 ).length,
 
             gaps
 
         };
-
-    }
-
-    //--------------------------------------------------
-
-    private determineSeverity(
-        confidence: number
-    ): KnowledgeGap["severity"] {
-
-        if (confidence < 0.20) {
-
-            return "high";
-
-        }
-
-        if (confidence < 0.50) {
-
-            return "medium";
-
-        }
-
-        return "low";
-
-    }
-
-    //--------------------------------------------------
-
-    private determineReason(
-        result: PromptVerificationReport["results"][number]
-    ): string {
-
-        if (result.evidence.length === 0) {
-
-            return "No supporting evidence was retrieved.";
-
-        }
-
-        return "Available evidence is insufficient to support the claim.";
-
-    }
-
-    //--------------------------------------------------
-
-    private determineRecommendation(
-        result: PromptVerificationReport["results"][number]
-    ): string {
-
-        if (result.evidence.length === 0) {
-
-            return "Add authoritative documentation describing this concept.";
-
-        }
-
-        return "Improve or clarify the existing documentation for this concept.";
 
     }
 

@@ -3,10 +3,18 @@ import type {
     AuthorityReport
 } from "../../contracts/AuthorityReport.js";
 
-import type { PromptVerificationReport }
-    from "../../contracts/PromptVerificationReport.js";
+import type {
+    PromptVerificationReport
+} from "../../contracts/PromptVerificationReport.js";
 
 export class AuthorityValidator {
+
+    //--------------------------------------------------
+    // Only report if higher-authority evidence provides
+    // comparable support.
+    //--------------------------------------------------
+
+    private static readonly COMPARABLE_SCORE = 0.90;
 
     validate(
         report: PromptVerificationReport
@@ -20,6 +28,10 @@ export class AuthorityValidator {
 
         for (const result of report.results) {
 
+            //--------------------------------------------------
+            // No evidence
+            //--------------------------------------------------
+
             if (
 
                 result.evidence.length === 0
@@ -30,26 +42,13 @@ export class AuthorityValidator {
 
             }
 
-            const highestPriority =
-
-                Math.max(
-
-                    ...result.evidence.map(
-
-                        evidence =>
-
-                            evidence.priority
-
-                    )
-
-                );
-
-            const usedPriority =
-                result.evidence[0].priority;
+            //--------------------------------------------------
+            // Only one supporting document
+            //--------------------------------------------------
 
             if (
 
-                usedPriority >= highestPriority
+                result.evidence.length === 1
 
             ) {
 
@@ -58,6 +57,57 @@ export class AuthorityValidator {
                 continue;
 
             }
+
+            //--------------------------------------------------
+            // Evidence is already sorted by score.
+            //--------------------------------------------------
+
+            const selected =
+                result.evidence[0];
+
+            //--------------------------------------------------
+            // Look for higher-authority evidence that is
+            // almost as relevant.
+            //--------------------------------------------------
+
+            const betterAuthority =
+
+                result.evidence.find(
+
+                    evidence =>
+
+                        evidence.priority >
+
+                        selected.priority &&
+
+                        evidence.score >=
+
+                        selected.score *
+
+                        AuthorityValidator.COMPARABLE_SCORE
+
+                );
+
+            //--------------------------------------------------
+            // Selected evidence is acceptable.
+            //--------------------------------------------------
+
+            if (
+
+                !betterAuthority
+
+            ) {
+
+                authoritative++;
+
+                continue;
+
+            }
+
+            //--------------------------------------------------
+            // Higher-authority evidence should probably
+            // have been preferred.
+            //--------------------------------------------------
 
             weakAuthority++;
 
@@ -69,23 +119,25 @@ export class AuthorityValidator {
                 claim:
                     result.claim.text,
 
-                highestPriority,
+                highestPriority:
+                    betterAuthority.priority,
 
-                usedPriority,
+                usedPriority:
+                    selected.priority,
 
                 severity:
 
                     this.severity(
 
-                        highestPriority,
+                        betterAuthority.priority,
 
-                        usedPriority
+                        selected.priority
 
                     ),
 
                 reason:
 
-                    `Best supporting evidence comes from priority ${usedPriority} although priority ${highestPriority} evidence exists.`
+                    `Higher-authority evidence (priority ${betterAuthority.priority}) provides comparable support but was not selected.`
 
             });
 
@@ -123,13 +175,21 @@ export class AuthorityValidator {
 
             highest - used;
 
-        if (delta >= 20) {
+        if (
+
+            delta >= 20
+
+        ) {
 
             return "high";
 
         }
 
-        if (delta >= 10) {
+        if (
+
+            delta >= 10
+
+        ) {
 
             return "medium";
 

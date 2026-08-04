@@ -23,6 +23,12 @@ import { AuthorityValidator } from "../pipeline/analysis/AuthorityValidator.js";
 import { ArchitectureValidator } from "../pipeline/analysis/ArchitectureValidator.js";
 import { Stopwatch } from "../shared/Stopwatch.js";
 
+import { ReviewParser }
+    from "../pipeline/promptverification/ReviewParser.js";
+
+import type { ReviewDocument }
+    from "../contracts/ReviewDocument.js";
+
 export class GenerationService {
     
     private readonly askService =
@@ -48,6 +54,8 @@ export class GenerationService {
 
     private readonly architectureValidator =
         new ArchitectureValidator();
+
+    private readonly reviewParser = new ReviewParser();
 
     async generate(
 
@@ -91,32 +99,96 @@ export class GenerationService {
 
         );
         console.log(`[${timer.elapsed()}] LLM inference complete`);
+        //--------------------------------------------------
+        // 4. Parse review
+        //--------------------------------------------------
+
+        const review: ReviewDocument =
+
+            this.reviewParser.parse(
+
+                inference.response
+
+            );
+
+        console.log(
+            `[${timer.elapsed()}] Review parsed`
+        );
+
+        //--------------------------------------------------
+        // 5. Verify claims
+        //--------------------------------------------------
+
         const verification =
+
             this.promptVerificationService.verify(
-                inference.response,
+
+                review,
+
                 knowledge
+
             );
-        console.log(`[${timer.elapsed()}] Verification complete`);
+
+        console.log(
+            `[${timer.elapsed()}] Verification complete`
+        );
+
+        //--------------------------------------------------
+        // 6. Knowledge gaps
+        //--------------------------------------------------
+
         const knowledgeGaps =
+
             this.knowledgeGapAnalyzer.analyze(
-                verification
+
+                review
+
             );
-        console.log(`[${timer.elapsed()}] Knowledge gaps analysis complete`);
+
+        console.log(
+            `[${timer.elapsed()}] Knowledge gaps analysis complete`
+        );
+
+        //--------------------------------------------------
+        // 7. Terminology
+        //--------------------------------------------------
+
         const terminology =
+
             this.terminologyValidator.validate(
 
-                inference.response,
+                review,
 
                 knowledge.terminology
 
             );
-        console.log(`[${timer.elapsed()}] Terminology validation complete`);
+
+        console.log(
+            `[${timer.elapsed()}] Terminology validation complete`
+        );
+
+        //--------------------------------------------------
+        // 8. Authority
+        //--------------------------------------------------
+
         const authority =
+
             this.authorityValidator.validate(
+
                 verification
+
             );
-        console.log(`[${timer.elapsed()}] Authority validation complete`);
+
+        console.log(
+            `[${timer.elapsed()}] Authority validation complete`
+        );
+
+        //--------------------------------------------------
+        // 9. Architecture
+        //--------------------------------------------------
+
         const architecture =
+
             this.architectureValidator.validate(
 
                 authority,
@@ -126,7 +198,10 @@ export class GenerationService {
                 knowledgeGaps
 
             );
-        console.log(`[${timer.elapsed()}] Architecture validation complete`);
+
+        console.log(
+            `[${timer.elapsed()}] Architecture validation complete`
+        );
         return {
             inference,
             verification,

@@ -4,6 +4,10 @@ import type {
     TerminologyViolation
 } from "../../contracts/Terminology.js";
 
+import type {
+    ReviewDocument
+} from "../../contracts/ReviewDocument.js";
+
 export class TerminologyValidator {
 
     private static readonly MINIMUM_SCORE = 7;
@@ -66,7 +70,7 @@ export class TerminologyValidator {
 
     validate(
 
-        response: string,
+        review: ReviewDocument,
 
         terminology: Terminology
 
@@ -84,9 +88,14 @@ export class TerminologyValidator {
 
         );
 
+        const text =
+            this.collectText(
+                review
+            );
+
         const candidates =
             this.extractCandidates(
-                response
+                text
             );
 
         const frequencies =
@@ -116,7 +125,7 @@ export class TerminologyValidator {
 
                     candidate,
 
-                    response,
+                    text,
 
                     frequencies
 
@@ -181,6 +190,58 @@ export class TerminologyValidator {
     }
 
     //--------------------------------------------------
+    // Collect semantic review content only
+    //--------------------------------------------------
+
+    private collectText(
+        review: ReviewDocument
+    ): string {
+
+        const allowed = new Set([
+
+            "verified facts",
+
+            "assumptions",
+
+            "missing information",
+
+            "recommendations"
+
+        ]);
+
+        return review.sections
+
+            .filter(
+
+                section =>
+
+                    allowed.has(
+
+                        section.title.toLowerCase()
+
+                    )
+
+            )
+
+            .flatMap(
+
+                section =>
+
+                    section.items.map(
+
+                        item =>
+
+                            item.text
+
+                    )
+
+            )
+
+            .join("\n");
+
+    }
+
+    //--------------------------------------------------
 
     private extractCandidates(
         text: string
@@ -204,10 +265,6 @@ export class TerminologyValidator {
 
             )
 
-            //--------------------------------------------------
-            // Ignore tiny phrases
-            //--------------------------------------------------
-
             .filter(
 
                 candidate =>
@@ -216,10 +273,6 @@ export class TerminologyValidator {
 
             )
 
-            //--------------------------------------------------
-            // Ignore D1, D7, etc.
-            //--------------------------------------------------
-
             .filter(
 
                 candidate =>
@@ -227,10 +280,6 @@ export class TerminologyValidator {
                     !/^[A-Z]?\d+$/.test(candidate)
 
             )
-
-            //--------------------------------------------------
-            // Ignore common English/report words
-            //--------------------------------------------------
 
             .filter(
 
@@ -288,7 +337,7 @@ export class TerminologyValidator {
 
         candidate: string,
 
-        response: string,
+        text: string,
 
         frequencies: Map<string, number>
 
@@ -351,72 +400,6 @@ export class TerminologyValidator {
         }
 
         //--------------------------------------------------
-        // Markdown heading
-        //--------------------------------------------------
-
-        const heading =
-
-            new RegExp(
-
-                `^#{1,6}\\s+${this.escape(candidate)}$`,
-
-                "mi"
-
-            );
-
-        if (
-
-            heading.test(
-
-                response
-
-            )
-
-        ) {
-
-            score += 4;
-
-            reasons.push(
-                "+4 Markdown Heading"
-            );
-
-        }
-
-        //--------------------------------------------------
-        // Inline code
-        //--------------------------------------------------
-
-        const inlineCode =
-
-            new RegExp(
-
-                "`" +
-
-                this.escape(candidate) +
-
-                "`"
-
-            );
-
-        if (
-
-            inlineCode.test(
-
-                response
-
-            )
-
-        ) {
-
-            score += 4;
-
-            reasons.push(
-                "+4 Inline Code"
-            );
-
-        }
-
-        //--------------------------------------------------
         // Appears multiple times
         //--------------------------------------------------
 
@@ -438,6 +421,24 @@ export class TerminologyValidator {
 
             reasons.push(
                 `+3 Appears ${frequency} times`
+            );
+
+        }
+
+        //--------------------------------------------------
+        // Appears in collected semantic text
+        //--------------------------------------------------
+
+        if (
+
+            text.includes(candidate)
+
+        ) {
+
+            score += 2;
+
+            reasons.push(
+                "+2 Present in semantic review"
             );
 
         }

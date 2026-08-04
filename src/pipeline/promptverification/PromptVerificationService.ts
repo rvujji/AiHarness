@@ -16,6 +16,10 @@ import { EvidenceVerifier }
 import { ConfidenceCalculator }
     from "./ConfidenceCalculator.js";
 
+import { ReviewParser }
+    from "./ReviewParser.js";
+import { ReviewDocument } from "../../contracts/ReviewDocument.js";
+
 export class PromptVerificationService {
 
     private readonly claimExtractor =
@@ -30,9 +34,10 @@ export class PromptVerificationService {
     private readonly confidenceCalculator =
         new ConfidenceCalculator();
 
+
     verify(
 
-        response: string,
+        response: ReviewDocument,
 
         bundle: OptimizedKnowledgeBundle
 
@@ -41,7 +46,6 @@ export class PromptVerificationService {
         //
         // Extract claims
         //
-
         const claims =
             this.claimExtractor.extract(
                 response

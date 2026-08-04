@@ -32,7 +32,23 @@ export class EvidenceVerifier {
                     evidence,
                     confidence
                 );
+//--------------------------------------------------
+// Debug
+//--------------------------------------------------
 
+console.log("\n====================================");
+console.log("Claim:");
+console.log(claim.claim.text);
+console.log("Status:", status);
+console.log("Confidence:", confidence.toFixed(3));
+
+for (const item of evidence) {
+
+    console.log(
+        `  P${item.priority} | Score=${item.score.toFixed(3)} | ${item.title}`
+    );
+
+}
             results.push({
 
                 claim: claim.claim,
@@ -133,9 +149,7 @@ export class EvidenceVerifier {
 
         if (
 
-            best >= 0.80 &&
-
-            average >= 0.70
+            confidence >= 0.80
 
         ) {
 
@@ -145,7 +159,7 @@ export class EvidenceVerifier {
 
         if (
 
-            best >= 0.60
+            confidence >= 0.60
 
         ) {
 

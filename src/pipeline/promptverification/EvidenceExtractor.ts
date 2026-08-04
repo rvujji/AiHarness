@@ -125,13 +125,46 @@ export class EvidenceExtractor {
 
             .sort(
 
-                (a,b)=>
+                (a, b) =>
 
-                    b.score-a.score
+                    this.rank(b) -
+
+                    this.rank(a)
 
             )
 
-            .slice(0,3);
+            .slice(0, 3);
+
+    }
+
+    //--------------------------------------------------
+
+    private rank(
+        evidence: Evidence
+    ): number {
+
+        //--------------------------------------------------
+        // 80% relevance
+        //--------------------------------------------------
+
+        const relevance =
+            evidence.score * 0.80;
+
+        //--------------------------------------------------
+        // 20% authority
+        //--------------------------------------------------
+
+        const authority =
+
+            (evidence.priority / 100) * 0.20;
+
+        return (
+
+            relevance +
+
+            authority
+
+        );
 
     }
 
