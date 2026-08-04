@@ -38,6 +38,14 @@ export class KnowledgeResolver {
 
                 priority: document.priority,
 
+                collection:
+
+                    this.extractCollection(
+
+                        document.path
+
+                    ),
+
                 content: TextLoader.load(document.path)
 
             });
@@ -59,6 +67,21 @@ export class KnowledgeResolver {
             documents
 
         };
+
+    }
+
+    private extractCollection(
+        path: string
+    ): string {
+
+        const parts =
+            path.replace(/\\/g, "/").split("/");
+
+        return parts.length >= 2
+
+            ? parts[1]
+
+            : "";
 
     }
 

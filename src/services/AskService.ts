@@ -5,6 +5,7 @@ import { SearchEngine } from "../pipeline/knowledge/SearchEngine.js";
 import { KnowledgeBundleBuilder } from "../pipeline/knowledge/KnowledgeBundleBuilder.js";
 import { KnowledgeResolver } from "../pipeline/knowledge/KnowledgeResolver.js";
 import { KnowledgeOptimizer } from "../pipeline/knowledge/KnowledgeOptimizer.js";
+import { KnowledgeScope } from "../contracts/KnowledgeScope.js";
 
 export class AskService {
 
@@ -18,7 +19,7 @@ export class AskService {
             )
         );
 
-    async ask(question: string) {
+    async ask(question: string, scope?: KnowledgeScope) {
 
         console.log();
         console.log("Embedding Question...");

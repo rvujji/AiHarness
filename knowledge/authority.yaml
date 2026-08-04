@@ -1,4 +1,7 @@
 documents:
+  #
+  # Architecture
+  #
   - id: platform-architecture
     title: Platform Architecture
     path: docs/architecture/PlatformArchitecture.md
@@ -18,13 +21,105 @@ documents:
     title: Aggregates
     path: docs/architecture/Aggregates.md
     priority: 90
-
+  #
+  # Product
+  #
   - id: brd
     title: BRD
     path: docs/product/BRD.md
     priority: 80
 
+  - id: product-strategy
+    title: Product Strategy
+    path: docs/product/ProductStrategy.md
+    priority: 80
+
+  - id: positioning
+    title: Positioning
+    path: docs/product/Positioning.md
+    priority: 75
+
+  - id: market-analysis
+    title: Market Analysis
+    path: docs/product/MarketAnalysis.md
+    priority: 75
+
+  #
+  # Behavioral Science
+  #
   - id: haom
     title: Human Adherence Operating Model
-    path: docs/psychology/HAOM.md
+    path: docs/behavior/HAOM.md
     priority: 85
+
+  - id: maom
+    title: MVP Adherence Operating Model
+    path: docs/behavior/MAOM.md
+    priority: 85
+
+  - id: bim
+    title: Behavioral Influence Model
+    path: docs/behavior/BIM.md
+    priority: 85
+
+  - id: bsam
+    title: Behavior Signal Acquisition Model
+    path: docs/behavior/BSAM.md
+    priority: 85
+
+  #
+  # Engineering
+  #
+
+  - id: metrics
+    title: Platform Metrics
+    path: docs/engineering/Metrics.md
+    priority: 85
+
+  - id: phase1
+    title: Phase 1
+    path: docs/engineering/Phase1.md
+    priority: 85
+
+  - id: apiguidelines
+    title: Api Guidelines
+    path: docs/engineering/ApiGuidelines.md
+    priority: 90
+
+  - id: codingstandards
+    title: Coding Standards
+    path: docs/engineering/CodingStandards.md
+    priority: 90
+
+  - id: databasemodel
+    title: Database Model
+    path: docs/engineering/DatabaseModel.md
+    priority: 90
+
+  #
+  # standards
+  #
+
+  - id: acceptancescenarios
+    title: Acceptance Scenarios
+    path: docs/standards/AcceptanceScenarios.md
+    priority: 85
+
+  - id: agents
+    title: Agents
+    path: docs/standards/AGENTS.md
+    priority: 85
+
+  - id: aiconstrainedsoftwaredeliverypipeline
+    title: AI Constrained Software Delivery Pipeline
+    path: docs/standards/AIConstrainedSoftwareDeliveryPipeline.md
+    priority: 85
+
+  - id: constitution
+    title: Constitution
+    path: docs/standards/Constitution.md
+    priority: 100
+
+  #
+  # ADRs
+  #

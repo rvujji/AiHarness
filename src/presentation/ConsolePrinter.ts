@@ -9,6 +9,7 @@ import type { GenerationResult }
 
 import type { EmbeddingIndex }
     from "../contracts/EmbeddingIndex.js";
+import { ReviewReport } from "../contracts/ReviewReport.js";
 
 export class ConsolePrinter {
 
@@ -555,6 +556,104 @@ export class ConsolePrinter {
         console.log(
             `Embedding index written successfully.`
         );
+
+    }
+
+    static printReviewReport(
+
+        report: ReviewReport
+
+    ): void {
+
+        console.log();
+
+        console.log(report.reviewer);
+
+        console.log(
+
+            "=".repeat(
+
+                report.reviewer.length
+
+            )
+
+        );
+
+        console.log();
+
+        console.log(report.summary);
+
+        console.log();
+
+        console.log("Findings");
+
+        console.log("--------");
+
+        console.log();
+
+        if (
+
+            report.findings.length === 0
+
+        ) {
+
+            console.log(
+
+                "No findings."
+
+            );
+
+            return;
+
+        }
+
+        for (
+
+            const finding of
+
+            report.findings
+
+        ) {
+
+            const icon =
+
+                finding.severity === "error"
+
+                    ? "✗"
+
+                : finding.severity === "warning"
+
+                    ? "⚠"
+
+                    : "ℹ";
+
+            console.log(
+
+                `${icon} ${finding.title}`
+
+            );
+
+            console.log(
+
+                `    Category : ${finding.category}`
+
+            );
+
+            console.log(
+
+                `    ${finding.description}`
+
+            );
+
+            console.log(
+
+                `    Recommendation: ${finding.recommendation}`
+
+            );
+
+            console.log();
+
+        }
 
     }
 

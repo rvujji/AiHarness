@@ -3,6 +3,9 @@ import { Indexer } from "./pipeline/knowledge/Indexer.js";
 import { AskService } from "./services/AskService.js";
 import { GenerationService } from "./services/GenerationService.js";
 import { ConsolePrinter } from "./presentation/ConsolePrinter.js";
+import { ReviewType } from "./contracts/ReviewType.js";
+import { ReviewService } from "./services/ReviewService.js";
+import { TextLoader } from "./shared/TextLoader.js";
 
 const [, , command, target] = process.argv;
 
@@ -92,6 +95,115 @@ switch (command) {
             );
 
         ConsolePrinter.printGenerationResult(result);
+
+        break;
+
+    }
+
+    case "review": {
+
+        const first =
+            process.argv[3];
+
+        const second =
+            process.argv[4];
+
+        const reviewService =
+            new ReviewService();
+
+        let reviewType: ReviewType | undefined;
+
+        let artifactPath: string;
+
+        //--------------------------------------------------
+        // Explicit reviewer
+        //--------------------------------------------------
+
+        if (
+
+            first === "architecture" ||
+
+            first === "ddd" ||
+
+            first === "database" ||
+
+            first === "api" ||
+
+            first === "implementation"
+
+        ) {
+
+            reviewType =
+                first;
+
+            artifactPath =
+                second;
+
+        }
+
+        //--------------------------------------------------
+        // Automatic reviewer
+        //--------------------------------------------------
+
+        else {
+
+            artifactPath =
+                first;
+
+        }
+
+        if (!artifactPath) {
+
+            console.log(
+
+                "Usage:"
+
+            );
+
+            console.log(
+
+                "  pnpm dev review <artifact>"
+
+            );
+
+            console.log(
+
+                "  pnpm dev review <reviewer> <artifact>"
+
+            );
+
+            break;
+
+        }
+
+        const artifact =
+
+            TextLoader.load(
+                artifactPath
+            );
+
+        const report =
+
+            await reviewService.review(
+
+                artifactPath,
+
+                {
+
+                    artifact,
+
+                    artifactType:
+                        "document"
+
+                },
+
+                reviewType
+
+            );
+
+        ConsolePrinter.printReviewReport(
+            report
+        );
 
         break;
 

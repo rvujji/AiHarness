@@ -8,6 +8,8 @@ export interface KnowledgeDocument {
 
     priority: number;
 
+    collection: string; 
+
     content: string;
 
 }
