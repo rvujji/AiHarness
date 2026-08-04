@@ -3,6 +3,79 @@ import type { Claim }
 
 export class ClaimExtractor {
 
+    private static readonly HEADINGS = new Set([
+
+        "summary",
+        "overview",
+        "goal",
+        "goals",
+        "dependencies",
+        "events",
+        "apis",
+        "constraints",
+        "ownership",
+        "output",
+        "expected output",
+        "inputs",
+        "outputs",
+
+        // Review headings
+        "analysis",
+        "review",
+        "finding",
+        "findings",
+        "issue",
+        "issues",
+        "conclusion",
+        "recommendation",
+        "recommendations"
+
+    ]);
+
+    private static readonly NON_FACT_PREFIXES = [
+
+        "recommendation:",
+        "recommendations:",
+        "suggestion:",
+        "suggestions:",
+        "potential improvement:",
+        "improvement:",
+        "consider ",
+        "it would be better",
+        "it may be beneficial"
+
+    ];
+
+    private static readonly VERBS = [
+
+        "is",
+        "are",
+        "was",
+        "were",
+
+        "has",
+        "have",
+        "had",
+
+        "creates",
+        "owns",
+        "belongs",
+        "contains",
+        "stores",
+        "uses",
+        "requires",
+        "produces",
+        "emits",
+        "returns",
+
+        "must",
+        "should",
+        "cannot",
+        "may",
+        "will"
+
+    ];
+
     extract(
         response: string
     ): Claim[] {
@@ -109,15 +182,9 @@ export class ClaimExtractor {
 
             block
 
-                // remove bullets
-
                 .replace(/^\s*[-*+]\s+/gm, "")
 
-                // remove numbered lists
-
                 .replace(/^\s*\d+\.\s+/gm, "")
-
-                // remove markdown headings
 
                 .replace(/^#{1,6}\s+/gm, "")
 
@@ -186,9 +253,9 @@ export class ClaimExtractor {
         const lower =
             sentence.toLowerCase();
 
-        //
+        //--------------------------------------------------
         // Ignore titles
-        //
+        //--------------------------------------------------
 
         if (
 
@@ -200,43 +267,13 @@ export class ClaimExtractor {
 
         }
 
-        //
-        // Ignore common section headings
-        //
-
-        const headings = [
-
-            "summary",
-
-            "overview",
-
-            "goal",
-
-            "goals",
-
-            "dependencies",
-
-            "events",
-
-            "apis",
-
-            "constraints",
-
-            "ownership",
-
-            "output",
-
-            "expected output",
-
-            "inputs",
-
-            "outputs"
-
-        ];
+        //--------------------------------------------------
+        // Ignore headings
+        //--------------------------------------------------
 
         if (
 
-            headings.includes(lower)
+            ClaimExtractor.HEADINGS.has(lower)
 
         ) {
 
@@ -244,57 +281,39 @@ export class ClaimExtractor {
 
         }
 
-        //
+        //--------------------------------------------------
+        // Ignore recommendations
+        //--------------------------------------------------
+
+        if (
+
+            ClaimExtractor.NON_FACT_PREFIXES.some(
+
+                prefix =>
+
+                    lower.startsWith(prefix)
+
+            )
+
+        ) {
+
+            return false;
+
+        }
+
+        //--------------------------------------------------
         // Must contain a verb
-        //
+        //--------------------------------------------------
 
-        const verbs = [
-
-            "is",
-
-            "are",
-
-            "has",
-
-            "have",
-
-            "creates",
-
-            "owns",
-
-            "belongs",
-
-            "contains",
-
-            "stores",
-
-            "uses",
-
-            "requires",
-
-            "produces",
-
-            "emits",
-
-            "returns",
-
-            "must",
-
-            "should",
-
-            "cannot",
-
-            "may",
-
-            "will"
-
-        ];
-
-        return verbs.some(
+        return ClaimExtractor.VERBS.some(
 
             verb =>
 
-                lower.includes(` ${verb} `)
+                new RegExp(
+
+                    `\\b${verb}\\b`
+
+                ).test(lower)
 
         );
 

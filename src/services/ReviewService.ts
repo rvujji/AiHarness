@@ -27,6 +27,7 @@ import { ReviewerResolver }
 
 import type { BaseReviewer }
     from "../pipeline/review/BaseReviewer.js";
+import { Stopwatch } from "../shared/Stopwatch.js";
 
 export class ReviewService {
 
@@ -65,11 +66,12 @@ export class ReviewService {
         //--------------------------------------------------
         // Resolve reviewer if not specified
         //--------------------------------------------------
+        const timer = new Stopwatch();
 
-        let selected =
-            reviewer;
+        let selected = reviewer;
 
         if (!selected) {
+            console.log(`[${timer.elapsed()}] Resolving reviewer`);
 
             const selection =
                 this.resolver.resolve(
@@ -80,9 +82,8 @@ export class ReviewService {
 
                 );
 
-            selected =
-                selection.reviewer;
-
+            selected = selection.reviewer;
+            console.log(`[${timer.elapsed()}] Review complete`);
         }
 
         //--------------------------------------------------

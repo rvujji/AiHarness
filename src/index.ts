@@ -6,25 +6,31 @@ import { ConsolePrinter } from "./presentation/ConsolePrinter.js";
 import { ReviewType } from "./contracts/ReviewType.js";
 import { ReviewService } from "./services/ReviewService.js";
 import { TextLoader } from "./shared/TextLoader.js";
+import { Stopwatch } from "./shared/Stopwatch.js";
 
 const [, , command, target] = process.argv;
+
+const timer =
+    new Stopwatch();
 
 switch (command) {
 
     case "resolve": {
+        console.log(`[${timer.elapsed()}] Starting resolve...`);
 
         const resolver = new KnowledgeResolver();
 
         const bundle = resolver.resolve(
                 target ?? "./feature-specs/example.yaml"
             );
-
+        console.log(`[${timer.elapsed()}] Finished resolve...`);
         ConsolePrinter.printKnowledgeBundle(bundle);
 
         break;
     }
 
     case "index": {
+        console.log(`[${timer.elapsed()}] Starting index...`);
 
         const resolver =
             new KnowledgeResolver();
@@ -40,6 +46,7 @@ switch (command) {
         const index = await indexer.index(
             bundle.documents
         );
+        console.log(`[${timer.elapsed()}] Finished index...`);
 
         ConsolePrinter.printEmbeddingIndex(index);
 
@@ -48,11 +55,14 @@ switch (command) {
     }
 
     case "ask": {
+        console.log(`[${timer.elapsed()}] Starting ask...`);
 
         const question = process.argv.slice(3).join(" ");
         const service = new AskService();
 
         const bundle = await service.ask(question);
+        console.log(`[${timer.elapsed()}] Finished ask...`);
+
         ConsolePrinter.printOptimizedKnowledge(bundle);
 
         break;
@@ -60,6 +70,7 @@ switch (command) {
     }
 
     case "generate": {
+        console.log(`[${timer.elapsed()}] Starting generate...`);
 
         const question =
             process.argv.slice(3).join(" ");
@@ -93,6 +104,7 @@ switch (command) {
                 }
 
             );
+        console.log(`[${timer.elapsed()}] Finished generate...`);
 
         ConsolePrinter.printGenerationResult(result);
 
@@ -101,6 +113,7 @@ switch (command) {
     }
 
     case "review": {
+        console.log(`[${timer.elapsed()}] Starting review...`);
 
         const first =
             process.argv[3];
@@ -200,6 +213,7 @@ switch (command) {
                 reviewType
 
             );
+        console.log(`[${timer.elapsed()}] Finished review...`);
 
         ConsolePrinter.printReviewReport(
             report

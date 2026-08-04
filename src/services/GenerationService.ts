@@ -21,6 +21,7 @@ import { KnowledgeGapAnalyzer }
 import { TerminologyValidator } from "../pipeline/analysis/TerminologyValidator.js";
 import { AuthorityValidator } from "../pipeline/analysis/AuthorityValidator.js";
 import { ArchitectureValidator } from "../pipeline/analysis/ArchitectureValidator.js";
+import { Stopwatch } from "../shared/Stopwatch.js";
 
 export class GenerationService {
     
@@ -58,13 +59,14 @@ export class GenerationService {
 
     ): Promise<GenerationResult> {
 
+        const timer = new Stopwatch();
         //
         // 1. Retrieve knowledge
         //
 
         const knowledge =
             await this.askService.ask(question);
-
+        console.log(`[${timer.elapsed()}] Knowledge retrieval complete`);
         //
         // 2. Build prompt
         //
@@ -77,7 +79,7 @@ export class GenerationService {
                 task
 
             );
-
+        console.log(`[${timer.elapsed()}] Prompt built`);
         //
         // 3. Execute inference
         //
@@ -88,18 +90,18 @@ export class GenerationService {
             model
 
         );
-
+        console.log(`[${timer.elapsed()}] LLM inference complete`);
         const verification =
             this.promptVerificationService.verify(
                 inference.response,
                 knowledge
             );
-
+        console.log(`[${timer.elapsed()}] Verification complete`);
         const knowledgeGaps =
             this.knowledgeGapAnalyzer.analyze(
                 verification
             );
-
+        console.log(`[${timer.elapsed()}] Knowledge gaps analysis complete`);
         const terminology =
             this.terminologyValidator.validate(
 
@@ -108,12 +110,12 @@ export class GenerationService {
                 knowledge.terminology
 
             );
-
+        console.log(`[${timer.elapsed()}] Terminology validation complete`);
         const authority =
             this.authorityValidator.validate(
                 verification
             );
-
+        console.log(`[${timer.elapsed()}] Authority validation complete`);
         const architecture =
             this.architectureValidator.validate(
 
@@ -124,6 +126,7 @@ export class GenerationService {
                 knowledgeGaps
 
             );
+        console.log(`[${timer.elapsed()}] Architecture validation complete`);
         return {
             inference,
             verification,
